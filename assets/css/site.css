@@ -1,0 +1,198 @@
+/* ==========================================================================
+   Bola Update Indonesia — public frontend stylesheet
+   Implements the approved mockup (docs/homepage-mockup-v1.html): light/
+   white base theme (referensi visual NHK World), red brand accent, 3
+   color-coded category bands (Liga Indonesia/Liga Eropa/Timnas), serif
+   editorial headlines (Fraunces) over sans body/brand (Manrope/Space
+   Grotesk). Category accent colors (c1-c4) map to wpm_category_color_class()
+   in includes/site-bootstrap.php — do not rename slugs/colors here without
+   updating that function too.
+   ========================================================================== */
+
+:root{
+  --red:#e30613;
+  --red-dark:#a50d15;
+  --ink:#18181b;
+  --grey-1:#52525b;
+  --grey-2:#71717a;
+  --line:#e4e4e7;
+  --bg:#ffffff;
+  --panel:#f4f4f5;
+  --c1:#e30613; /* Liga Indonesia */
+  --c2:#1e3a8a; /* Liga Eropa */
+  --c3:#166534; /* Timnas */
+  --c4:#b45309; /* Transfer */
+  --f-brand:'Space Grotesk', sans-serif;
+  --f-head:'Fraunces', Georgia, serif;
+  --f-body:'Manrope', -apple-system, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--f-body);background:var(--bg);color:var(--ink);}
+a{text-decoration:none;color:inherit;}
+img{max-width:100%;display:block;}
+.wpm-wrap{max-width:1180px;margin:0 auto;padding:0 20px;}
+
+/* ── Header ── */
+.wpm-header{border-bottom:1px solid var(--line);background:#fff;}
+.wpm-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;gap:18px;flex-wrap:wrap;}
+.wpm-brand{display:flex;align-items:center;gap:8px;font-family:var(--f-brand);font-weight:700;font-size:26px;letter-spacing:.5px;}
+.wpm-brand__icon{display:block;border-radius:7px;flex:0 0 auto;}
+.wpm-brand__b1{color:var(--red);}
+.wpm-brand__b2{color:var(--ink);}
+.wpm-nav{display:flex;gap:22px;font-size:14px;font-weight:600;color:var(--grey-1);flex-wrap:wrap;}
+.wpm-nav a:hover,.wpm-nav a.is-active{color:var(--red);}
+.wpm-search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:20px;padding:7px 14px;font-size:13px;color:var(--grey-2);}
+.wpm-search input{border:none;outline:none;background:transparent;font-size:13px;font-family:var(--f-body);width:150px;color:var(--ink);}
+.wpm-search svg{flex-shrink:0;}
+
+.wpm-topics{border-top:1px solid var(--line);padding:10px 20px;font-size:12.5px;color:var(--grey-2);display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.wpm-topics b{color:var(--ink);}
+.wpm-topics a{color:var(--red);font-weight:600;}
+
+.wpm-content{padding:0 0 40px;}
+
+/* ── Photo placeholder box: real <img> via wpm_image_url(), styled so a
+   missing/placeholder image still reads as a clean tile instead of a
+   broken box. ── */
+.wpm-photo{background:var(--panel);overflow:hidden;}
+.wpm-photo img{width:100%;height:100%;object-fit:cover;}
+
+/* ── Hero ── */
+.wpm-hero{display:grid;grid-template-columns:2fr 1fr;gap:24px;padding:26px 0;}
+.wpm-hero-main .wpm-photo{height:340px;border-radius:6px;}
+.wpm-hero-cap{padding-top:12px;}
+.wpm-tag{display:inline-block;background:var(--red);color:#fff;font-size:11px;font-weight:700;letter-spacing:.4px;padding:3px 9px;border-radius:3px;margin-bottom:8px;}
+.wpm-hero-cap h1{font-family:var(--f-head);font-weight:600;font-size:26px;line-height:1.28;margin:0 0 6px;letter-spacing:-.2px;}
+.wpm-hero-cap p{font-size:13.5px;color:var(--grey-1);margin:0 0 6px;line-height:1.5;}
+.wpm-meta{font-size:12px;color:var(--grey-2);}
+
+.wpm-side-panel{border:1px solid var(--line);border-radius:6px;padding:16px;}
+.wpm-side-panel h3{font-family:var(--f-brand);font-size:14px;letter-spacing:.4px;text-transform:uppercase;margin:0 0 12px;padding-bottom:10px;border-bottom:2px solid var(--ink);}
+.wpm-side-item{display:block;padding:10px 0;border-bottom:1px solid var(--line);font-family:var(--f-head);font-size:14.5px;font-weight:600;line-height:1.4;}
+.wpm-side-item:last-child{border-bottom:none;}
+.wpm-side-item .wpm-num{color:var(--red);font-weight:800;margin-right:6px;}
+
+.wpm-empty-state{text-align:center;padding:60px 20px;color:var(--grey-2);background:var(--panel);border-radius:8px;margin:26px 0;}
+.wpm-empty-state__icon{font-size:36px;display:block;margin-bottom:10px;}
+.wpm-empty-state h2{font-size:16px;color:var(--ink);margin-bottom:6px;}
+
+/* ── Category color band ── */
+.wpm-band{padding:30px 0;color:#fff;}
+.wpm-band .wpm-wrap{display:grid;grid-template-columns:1.6fr 1fr;gap:24px;}
+.wpm-band-title{display:flex;align-items:center;gap:8px;font-family:var(--f-brand);font-size:18px;font-weight:700;letter-spacing:.3px;margin:0 0 16px;}
+.wpm-band-title .wpm-chev{font-size:14px;opacity:.8;}
+.wpm-band-hero .wpm-photo{height:230px;border-radius:6px;}
+.wpm-band-hero h2{font-family:var(--f-head);font-weight:600;font-size:21px;margin:12px 0 4px;line-height:1.3;}
+.wpm-band-hero .wpm-meta{color:rgba(255,255,255,.75);}
+.wpm-band-list{display:flex;flex-direction:column;gap:14px;}
+.wpm-band-list .wpm-item{display:flex;gap:12px;}
+.wpm-band-list .wpm-photo{width:96px;height:64px;flex:0 0 auto;border-radius:4px;}
+.wpm-band-list .wpm-txt h4{font-family:var(--f-head);font-weight:600;font-size:14.5px;margin:0 0 4px;line-height:1.35;}
+.wpm-band-list .wpm-txt .wpm-meta{color:rgba(255,255,255,.7);}
+
+.wpm-band.c1{background:linear-gradient(120deg,#7f1d1d,#c81e2c);}
+.wpm-band.c2{background:linear-gradient(120deg,#111827,#1e3a8a);}
+.wpm-band.c3{background:linear-gradient(120deg,#052e16,#166534);}
+.wpm-band.c4{background:linear-gradient(120deg,#78350f,#b45309);}
+
+/* ── Features / Sorotan ── */
+.wpm-features{padding:34px 0;}
+.wpm-section-title{font-family:var(--f-brand);font-weight:700;font-size:19px;letter-spacing:.3px;margin:0 0 18px;}
+.wpm-feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.wpm-feat-card .wpm-photo{height:130px;border-radius:6px;}
+.wpm-feat-card{font-size:13px;}
+.wpm-feat-card .wpm-fcat{color:var(--red);font-weight:800;font-size:10.5px;letter-spacing:.4px;margin:10px 0 4px;text-transform:uppercase;}
+.wpm-feat-card h4{font-family:var(--f-head);font-weight:600;font-size:15px;margin:0 0 6px;line-height:1.35;}
+.wpm-feat-card .wpm-meta{color:var(--grey-2);}
+.wpm-btn-pill{display:block;text-align:center;background:linear-gradient(90deg,var(--red),var(--red-dark));color:#fff;font-family:var(--f-brand);font-weight:700;font-size:13px;letter-spacing:.3px;padding:11px;border-radius:24px;margin:22px auto 0;max-width:220px;}
+
+/* ── Find more ── */
+.wpm-findmore{background:var(--panel);padding:34px 0;}
+.wpm-fm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+.wpm-fm-col h4{font-family:var(--f-brand);font-size:14.5px;font-weight:700;letter-spacing:.3px;margin:0 0 12px;display:flex;align-items:center;gap:6px;}
+.wpm-fm-col h4 .wpm-chev{color:var(--red);}
+.wpm-fm-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);}
+.wpm-fm-item .wpm-photo{width:60px;height:44px;flex:0 0 auto;border-radius:4px;}
+.wpm-fm-item .wpm-txt{font-family:var(--f-head);font-size:13.5px;font-weight:600;line-height:1.4;}
+.wpm-fm-item .wpm-meta{color:var(--grey-2);font-weight:400;margin-top:3px;}
+
+/* ── Promo strip ── */
+.wpm-promo{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--ink);}
+.wpm-promo .wpm-cell{height:110px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-family:var(--f-brand);font-weight:700;font-size:16px;letter-spacing:.4px;padding:10px;}
+.wpm-promo .wpm-cell.a{background:linear-gradient(120deg,#7f1d1d,#e30613);}
+.wpm-promo .wpm-cell.b{background:linear-gradient(120deg,#111827,#3f3f46);}
+.wpm-promo .wpm-cell.c{background:linear-gradient(120deg,#1e3a8a,#0ea5e9);}
+
+/* ── Sec head chip (category listing header, reused by kategori.php) ── */
+.wpm-sec-head{display:flex;align-items:center;justify-content:space-between;margin:34px 0 16px;}
+.wpm-chip{background:var(--ink);color:#fff;font-family:var(--f-brand);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:8px 16px;border-radius:4px;}
+.wpm-sec-head.c1 .wpm-chip{background:var(--c1);}
+.wpm-sec-head.c2 .wpm-chip{background:var(--c2);}
+.wpm-sec-head.c3 .wpm-chip{background:var(--c3);}
+.wpm-sec-head.c4 .wpm-chip{background:var(--c4);}
+.wpm-more{font-size:12px;font-weight:700;color:var(--grey-2);}
+
+/* ── Category listing page ── */
+.wpm-breadcrumb{font-size:12px;color:var(--grey-2);margin:20px 0 14px;}
+.wpm-breadcrumb a{color:var(--grey-2);}
+.wpm-page-title{font-family:var(--f-head);font-size:22px;font-weight:600;margin:20px 0;}
+.wpm-listing-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;margin-top:16px;}
+.wpm-listing-main{display:flex;flex-direction:column;gap:12px;}
+.wpm-list-card{display:grid;grid-template-columns:150px 1fr;gap:14px;background:#fff;border-radius:6px;overflow:hidden;border:1px solid var(--line);}
+.wpm-list-card .wpm-photo,.wpm-list-card img{height:100px;width:100%;object-fit:cover;background:var(--panel);}
+.wpm-list-card__body{padding:10px 12px 10px 0;display:flex;flex-direction:column;justify-content:center;gap:4px;}
+.wpm-list-card__title{font-family:var(--f-head);font-size:15px;font-weight:600;line-height:1.35;}
+.wpm-list-card__excerpt{font-size:12px;color:var(--grey-1);}
+.wpm-list-card__meta{font-size:10px;color:var(--grey-2);text-transform:uppercase;letter-spacing:.4px;}
+
+.wpm-pagination{display:flex;gap:8px;margin-top:20px;}
+.wpm-pagination a,.wpm-pagination span{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:4px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:700;}
+.wpm-pagination span.is-active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+.wpm-popular-panel{border:1px solid var(--line);border-radius:6px;padding:16px;align-self:start;}
+.wpm-popular-panel h5{font-family:var(--f-brand);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--ink);color:var(--ink);}
+.wpm-p-row{display:flex;gap:10px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line);}
+.wpm-p-row:last-child{border-bottom:none;}
+.wpm-p-row__rank{font-family:var(--f-brand);font-size:13px;font-weight:800;color:var(--red);width:18px;flex-shrink:0;}
+.wpm-p-row__title{font-family:var(--f-head);font-size:13.5px;font-weight:600;line-height:1.35;}
+.wpm-sidebar-empty{color:var(--grey-2);font-size:13px;padding:8px 0;}
+
+/* ── Article page ── */
+.wpm-badge{display:inline-block;color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;background:var(--c1);}
+.wpm-badge.c1{background:var(--c1);}
+.wpm-badge.c2{background:var(--c2);}
+.wpm-badge.c3{background:var(--c3);}
+.wpm-badge.c4{background:var(--c4);}
+.wpm-article{display:grid;grid-template-columns:1.8fr 1fr;gap:24px;margin-top:6px;}
+.wpm-article__title{font-family:var(--f-head);font-size:28px;font-weight:600;line-height:1.28;margin-bottom:10px;letter-spacing:-.2px;}
+.wpm-article__meta{font-size:12px;color:var(--grey-2);margin-bottom:16px;}
+.wpm-article__cover{width:100%;border-radius:8px;margin-bottom:18px;background:var(--panel);}
+.wpm-article__body{font-size:15.5px;line-height:1.8;color:var(--ink);}
+.wpm-article__body p{margin-bottom:16px;}
+.wpm-article__body img{border-radius:6px;margin:16px 0;}
+
+/* ── Ad slots ── */
+.wpm-ad-slot{display:block;margin-bottom:20px;border-radius:6px;overflow:hidden;background:#fff;border:1px solid var(--line);}
+.wpm-ad__label{display:block;font-size:10px;color:var(--grey-2);padding:4px 8px;}
+
+/* ── Footer ── */
+.wpm-footer{background:var(--ink);color:#d4d4d8;padding:34px 0 18px;margin-top:20px;}
+.wpm-footer__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-bottom:26px;}
+.wpm-footer__grid h5{color:#fff;font-family:var(--f-brand);font-weight:700;font-size:13.5px;letter-spacing:.3px;margin:0 0 10px;}
+.wpm-footer__grid a{display:block;font-size:12.5px;color:#a1a1aa;padding:4px 0;}
+.wpm-footer__bottom{border-top:1px solid #3f3f46;padding-top:16px;font-size:11.5px;color:#71717a;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.wpm-footer__brand{font-size:16px;font-family:var(--f-brand);font-weight:700;}
+.wpm-footer__brand span:last-child{color:#d4d4d8;}
+
+/* ── Responsive ── */
+@media (max-width:820px){
+  .wpm-hero{grid-template-columns:1fr;}
+  .wpm-band .wpm-wrap{grid-template-columns:1fr;}
+  .wpm-feat-grid{grid-template-columns:repeat(2,1fr);}
+  .wpm-fm-grid{grid-template-columns:1fr;}
+  .wpm-promo{grid-template-columns:1fr;}
+  .wpm-footer__grid{grid-template-columns:1fr;}
+  .wpm-nav{gap:14px;}
+  .wpm-listing-grid,.wpm-article{grid-template-columns:1fr;}
+  .wpm-list-card{grid-template-columns:110px 1fr;}
+}
