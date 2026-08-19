@@ -208,16 +208,20 @@ WCM 1 V.1.
       `https://github.com/jalijali-dev/wcm-bolaupdateindonesia.com.git`
       branch `main` (119 file, source code + `.example` config saja,
       tanpa kredensial asli).
-- [ ] `.cpanel.yml` masih placeholder `/home/USERNAME/public_html/` dan
-      komentarnya masih nyebut "akun cPanel biangolahraga.com" (warisan
-      WCM2). Operator sudah konfirmasi nama folder docroot addon domain:
-      `bolaupdateindonesia.com` (huruf kecil semua) — **masih nunggu
-      username akun cPanel / path lengkap** dari operator untuk
-      melengkapi `DEPLOYPATH` dan membersihkan komentar warisan WCM2.
-- [ ] Hosting cPanel: domain BolaUpdateIndonesia.com tampaknya jadi
-      addon domain di akun cPanel yang sudah ada (bukan akun baru) —
-      perlu path lengkap dari operator (lihat poin di atas) sebelum
-      deploy pertama lewat cPanel Git Version Control.
+- [x] **`.cpanel.yml` sudah diisi path production sungguhan** (operator
+      kasih dari screenshot cPanel → Domains): `DEPLOYPATH=/home/
+      bolaupdateindone/public_html/`. Komentar warisan "akun cPanel
+      biangolahraga.com" sudah dihapus/diganti referensi ke
+      bolaupdateindonesia.com. Repo Git Version Control di cPanel
+      di-clone ke path terpisah `/home/bolaupdateindone/repositories/
+      wcm-bolaupdateindonesia.com` (bukan docroot) — `.cpanel.yml` inilah
+      yang rsync isinya ke `public_html` saat tombol "Deploy HEAD Commit"
+      ditekan. Exclude list tetap sama: `.git`, `.cpanel.yml`,
+      `cms-admin/config/database.php`, `cms-admin/config/app.php`,
+      `uploads`. Perubahan ini sudah di-commit & push ke `main`.
+- [x] Hosting cPanel: domain BolaUpdateIndonesia.com adalah addon domain
+      di akun cPanel `bolaupdateindone` (bukan akun baru terpisah) —
+      dikonfirmasi lewat path docroot di atas.
 - [ ] **Config production (manual di server, TIDAK lewat git):**
       `cms-admin/config/database.php` di server perlu diisi
       `DB_NAME=bolaupdateindone_cms`, `DB_HOST=localhost` (bukan `mysql`
