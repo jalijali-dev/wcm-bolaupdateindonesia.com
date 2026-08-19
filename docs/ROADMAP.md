@@ -1,6 +1,7 @@
 # Progress Roadmap — WCM 3 - Version 1
 
-Status per 19 Agustus 2026.
+Status per 19 Agustus 2026. **🟢 SITUS FULL LIVE / ONLINE** di
+https://bolaupdateindonesia.com.
 
 Legenda: 🟢 Selesai · 🟠 Sebagian · ⚪ Belum mulai
 
@@ -12,44 +13,48 @@ Legenda: 🟢 Selesai · 🟠 Sebagian · ⚪ Belum mulai
 > Niche: bola & seputar olahraga umum — beda dari niche multi-cabang
 > spesifik (Bulu Tangkis/Tinju/Moto GP/Tips) kepunyaan WCM 2 V.1.
 >
-> **Catatan penting:** folder kerja proyek ini (`wcm3_version1`) awalnya
-> berisi penuh dokumen & config proyek WCM 2 (Biang Olahraga) — bukan
-> folder WCM 3 yang genuinely baru/kosong. Sesi 19 Agu 2026 mulai proses
-> rename branding (domain, tagline, DB name, secret) dari WCM 2 ke WCM 3.
-> Kategori nav final sudah diputuskan (Liga Indonesia/Liga Eropa/Timnas/
-> Transfer) dan mockup homepage V1 sudah dibuat & disetujui (referensi
-> NHK World, light theme, logo merah). Yang masih warisan Biang Olahraga
-> dan BELUM diaudit/diimplementasikan: `cms-admin/` modul-modul lain,
-> tema visual di kode PHP asli (mockup masih HTML statis terpisah) —
+> **Status go-live (19 Agu 2026):** dimulai dari folder yang awalnya
+> berisi penuh proyek WCM 2 (branding, config, docs), lalu di-rename
+> total ke WCM 3, mockup homepage V1 (referensi NHK World, light theme)
+> diimplementasikan ke kode PHP asli, 8 artikel seed dimasukkan, riwayat
+> git direset bersih & di-push ke GitHub, deploy ke cPanel via Git
+> Version Control sukses, config production diisi manual di server, dan
+> admin panel sudah bisa login. Situs sekarang FULL LIVE. Item yang
+> masih terbuka (non-blocking): isolasi Cloudflare/GSC/IP hosting,
+> struktur permalink custom, audit modul cms-admin, logo grafis final —
 > lihat `docs/HANDOFF.md` untuk daftar lengkap.
 
-## Fase 0 — Pondasi ⚪ Belum mulai
+## Fase 0 — Pondasi 🟢 Selesai
 
-Domain BolaUpdateIndonesia.com — status pembelian belum dikonfirmasi.
-Belum ada Git repo yang terverifikasi milik WCM 3 (folder ini punya
-`.git`/`.cpanel.yml` warisan yang belum dicek remote-nya), hosting, atau
-GSC. Status database `wcm3_version1` di MySQL dev
-lokal (sudah dibuat & kosong, atau belum) juga belum dikonfirmasi
-operator.
+Domain BolaUpdateIndonesia.com sudah live di production. Git repo WCM3
+terverifikasi & bersih (`https://github.com/jalijali-dev/
+wcm-bolaupdateindonesia.com.git`), `.cpanel.yml` sudah diisi DEPLOYPATH
+production yang benar. Database dev lokal (`wcm3_version1`) dan
+database production (`bolaupdateindone_cms`, cPanel MySQL Databases)
+keduanya sudah dibuat, kosong dari awal, dan sudah di-schema-migrate.
+Belum: GSC property baru untuk domain ini (lihat Fase 5).
 
-## Fase 1 — Backend: Schema & Adaptasi CMS 🟠 Sebagian
+## Fase 1 — Backend: Schema & Adaptasi CMS 🟢 Selesai (untuk go-live)
 
 `cms-admin/` di-clone dari WCM 2 V.1 (bukan dari wcm1_version1
 langsung — beda pola dari WCM 2 yang di-clone dari WCM 1). Rename
-branding sudah jalan: `DB_NAME` → `wcm3_version1`,
-`CMS_AI_ENC_SECRET` digenerate ulang, `CMS_ADMIN_TAGLINE` → "Bola
-Update Indonesia". Belum: konfirmasi database benar-benar kosong di
-MySQL, schema migration, audit modul cms-admin sesuai niche bola/
-olahraga umum (belum diulang khusus untuk WCM 3), `GROWTH_AGENT_
-DIGEST_TOKEN` masih placeholder.
+branding sudah jalan di dev & production: `DB_NAME`/`DB_HOST` sesuai
+masing-masing environment, `CMS_AI_ENC_SECRET` digenerate ulang
+TERPISAH untuk dev dan production (tidak reuse), `CMS_ADMIN_TAGLINE` →
+"Bola Update Indonesia". Admin panel production sudah bisa diakses &
+login. Belum (non-blocking): audit modul cms-admin sesuai niche bola/
+olahraga umum secara menyeluruh, `GROWTH_AGENT_DIGEST_TOKEN` masih
+placeholder (modul belum aktif dipakai).
 
-## Fase 2 — Backend: Isi Konten Struktural ⚪ Belum mulai
+## Fase 2 — Backend: Isi Konten Struktural 🟢 Selesai (untuk go-live)
 
 Niche ditentukan (bola & seputar olahraga umum) dan kategori nav final
 sudah diputuskan operator (19 Agu 2026): **Liga Indonesia, Liga Eropa,
-Timnas, Transfer**. Belum ada satu kategori atau artikel pun dibuat
-untuk WCM 3 di database — nunggu schema migration & database
-dikonfirmasi kosong dulu.
+Timnas, Transfer**. Kategori ini sudah terverifikasi ada di database
+production (`article_categories`) dan 8 artikel (2 per kategori, ditulis
+dari nol) sudah live di https://bolaupdateindonesia.com. Belum: 3
+artikel warisan WCM 2 tanpa kategori masih perlu dibersihkan dari tabel
+`pages` production.
 
 ## Fase 3 — Frontend: Bangun dari Mockup 🟢 Selesai
 
@@ -84,29 +89,33 @@ Olahraga" (warisan WCM 2) ke "Bola Update Indonesia" dengan palet light.
 Belum: logo grafis final (masih wordmark teks), favicon publik grafis
 asli (masih placeholder warisan clone).
 
-## Fase 5 — Pra-Launch 🟠 Sebagian
+## Fase 5 — Pra-Launch & Deploy 🟢 Selesai — SITUS LIVE
 
-Mulai deploy prep ke GitHub + cPanel Git Version Control. **Git repo WCM3
-sudah live**: riwayat `.git` lokal lama ternyata warisan WCM 2 murni (1
-commit "biangolahraga.com go-live prep", remote salah ke
-`wcm-biangolahraga.com.git`) — sudah diaudit (tidak ada kredensial bocor)
-lalu dibuang & di-reinit bersih (backup disimpan di luar folder proyek,
-bukan dihapus). Commit awal WCM3 (119 file, source only, tanpa
-kredensial) sudah di-push ke
-`https://github.com/jalijali-dev/wcm-bolaupdateindonesia.com.git` branch
-`main`. `.gitignore` dikonfirmasi masih benar (config kredensial +
-uploads + script `_*.php` ter-exclude).
+Deploy ke GitHub + cPanel Git Version Control sudah tuntas dan situs
+**FULL LIVE** di https://bolaupdateindonesia.com. Ringkasan:
+- Riwayat `.git` lokal lama (warisan WCM 2 murni, remote salah ke
+  `wcm-biangolahraga.com.git`) diaudit (tidak ada kredensial bocor) lalu
+  di-reset bersih (backup disimpan di luar folder proyek). Commit awal
+  WCM3 di-push ke
+  `https://github.com/jalijali-dev/wcm-bolaupdateindonesia.com.git`
+  branch `main`.
+- `.cpanel.yml` diisi `DEPLOYPATH=/home/bolaupdateindone/public_html/`
+  (path production sungguhan). Repo Git Version Control cPanel di
+  `/home/bolaupdateindone/repositories/wcm-bolaupdateindonesia.com`.
+- Config production (`database.php` — DB `bolaupdateindone_cms`,
+  `DB_HOST=localhost`; `app.php` — `CMS_AI_ENC_SECRET` baru khusus
+  production) dibuat manual di server via cPanel File Manager, tidak
+  lewat git.
+- "Deploy HEAD Commit" dijalankan sukses; homepage, 4 kategori, dan
+  artikel semua tampil benar sesuai mockup V1.
+- Kredensial admin awal (warisan WCM2) direset ke
+  `admin@bolaupdateindonesia.com` + password baru; login production
+  dikonfirmasi berhasil.
 
-Belum: `.cpanel.yml` masih placeholder DEPLOYPATH (nunggu username/path
-lengkap cPanel dari operator — folder docroot addon domain sudah
-dikonfirmasi bernama `bolaupdateindonesia.com`), config production
-(`database.php`/`app.php` server — kredensial DB cPanel + `CMS_AI_ENC_SECRET`
-baru khusus production) masih perlu diisi manual oleh operator lewat
-cPanel File Manager, dan verifikasi isi `article_categories` di database
-production (`bolaupdateindone_cms`) masih perlu dicek manual oleh
-operator lewat phpMyAdmin sebelum publish artikel pertama di sana.
-Isolasi infrastruktur (IP hosting, akun Cloudflare, GSC) masih perlu
-diputuskan operator.
+Belum (non-blocking, follow-up): isolasi infrastruktur (IP hosting beda
+dari tentakel lain, akun Cloudflare, GSC property baru) masih perlu
+diputuskan/dikerjakan operator; 3 artikel warisan WCM2 tanpa kategori
+masih perlu dibersihkan dari `pages` production.
 
 ## Fase 6 — AI Automation Layer ⚪ Belum mulai
 

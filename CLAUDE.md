@@ -1,11 +1,20 @@
 # Project: WCM 3 - Version 1 — "Tentakel 3" untuk struktur PBN — brand: Bola Update Indonesia
 
+> **STATUS: 🟢 LIVE / ONLINE sejak 19 Agustus 2026.** Situs sudah live di
+> https://bolaupdateindonesia.com (homepage, 4 kategori final, artikel
+> semua tampil sesuai mockup), deploy lewat cPanel Git Version Control
+> sukses, config production sudah terisi manual di server, dan admin
+> panel sudah bisa login. Detail lengkap ada di `docs/HANDOFF.md` dan
+> `docs/ROADMAP.md`. Beberapa item non-blocking (isolasi Cloudflare/GSC,
+> struktur permalink custom, audit konten warisan WCM2) masih terbuka —
+> lihat checklist di `docs/HANDOFF.md`.
+
 > **WAJIB DIBACA DI AWAL SESI, SEBELUM AKSI APAPUN.** File ini adalah
 > instruksi proyek, bukan sekadar catatan — ikuti isinya. Setelah baca
 > file ini, baca juga `docs/HANDOFF.md` (checklist detail) dan
 > `docs/ROADMAP.md` (status per fase) sebelum mulai kerja. Kalau ada
-> keputusan besar yang masih kosong di bawah (permalink, kategori final,
-> akun Cloudflare), TANYA operator dulu lewat chat — jangan asumsi atau
+> keputusan besar yang masih kosong di bawah (permalink, akun
+> Cloudflare), TANYA operator dulu lewat chat — jangan asumsi atau
 > eksekusi sendiri duluan.
 
 ## Konteks & tujuan
@@ -92,44 +101,49 @@ Olahraga yang HARUS diaudit ulang / diganti, bukan cuma nama brand:
 - `docs/HANDOFF.md` dan `docs/ROADMAP.md` ditulis ulang mencerminkan
   status WCM 3 (lihat file masing-masing untuk detail checklist).
 
+**19 Agustus 2026 (sesi lanjutan — deploy & go-live):**
+- Mockup homepage V1 diimplementasikan penuh ke `index.php`,
+  `includes/site-header.php`, `includes/site-footer.php`,
+  `assets/css/site.css` (tema light), plus `kategori.php`/`artikel.php`
+  dirapikan. 8 artikel seed (2 per kategori final) + ilustrasi SVG per
+  kategori dimasukkan ke database.
+- Riwayat `.git` lama (warisan WCM 2) diaudit & di-reset bersih, commit
+  awal WCM3 di-push ke GitHub
+  (`https://github.com/jalijali-dev/wcm-bolaupdateindonesia.com.git`).
+- `.cpanel.yml` diisi `DEPLOYPATH=/home/bolaupdateindone/public_html/`.
+- Config production (`database.php`, `app.php` — kredensial DB +
+  `CMS_AI_ENC_SECRET` baru) dibuat manual di server via cPanel File
+  Manager. Deploy via "Deploy HEAD Commit" sukses.
+- Kredensial admin awal (sisa WCM2, `admin@biangolahraga.com`) direset
+  via SQL manual ke `admin@bolaupdateindonesia.com` + password baru —
+  login dikonfirmasi berhasil oleh operator.
+- **Situs FULL LIVE di https://bolaupdateindonesia.com.**
+
 ## Yang BELUM dikerjakan — task list buat lanjut
 
-1. **Konfirmasi ke operator:** database `wcm3_version1`
-   sudah dibuat kosong di MySQL dev lokal atau belum? Kalau belum, minta
-   dibuatkan dulu (dan pastikan BENAR-BENAR kosong, bukan hasil "Copy
-   database" — lihat catatan insiden WCM 2 di atas).
-2. **Audit ulang kategori & nav** — ganti kategori warisan Biang
-   Olahraga (Bulu Tangkis/Tinju/Moto GP/Tips) di `includes/site-
-   bootstrap.php`, `includes/site-header.php`, `index.php` ke kategori
-   yang sesuai niche bola & olahraga umum WCM 3. Perlu keputusan
-   operator soal kategori final apa saja yang mau dipakai.
-3. Detail struktur permalink yang mau dibuat beda dari
-   `/artikel/{slug}` punya wcm1_version1 (dan juga beda dari WCM 2).
-4. Jalanin schema migration di database `wcm3_version1`
-   begitu database-nya sudah dikonfirmasi kosong, lalu input kategori
-   final WCM 3 ke CMS.
-5. Audit ulang modul cms-admin (warisan clone dari WCM 2) — buang yang
+Situs sudah LIVE (lihat status di atas). Sisa item di bawah ini
+non-blocking untuk go-live, tapi masih perlu diselesaikan:
+
+1. Audit ulang modul cms-admin (warisan clone dari WCM 2) — buang yang
    spesifik konteks Biang Olahraga dan gak relevan buat WCM 3.
-6. Logo — `cms-admin/assets/img/logo.png` / `logo-white.png` dan
-   `assets/img/favicon.svg` masih placeholder/warisan clone, belum
-   disesuaikan ke identitas Bola Update Indonesia.
-7. Desain visual (palet warna, layout) — pastikan dibedakan dari WCM 2
-   V.1 dan WCM 1 V.1 supaya gak kelihatan PBN yang sama (posisinya
-   sejajar dengan WCM 2 V.1).
-8. Isolasi infrastruktur: IP hosting beda dari tentakel lain (paling
+2. Logo — `cms-admin/assets/img/logo.png` / `logo-white.png` masih
+   placeholder/warisan clone, belum disesuaikan ke identitas Bola Update
+   Indonesia. Logo publik (`assets/img/favicon.svg`) juga masih
+   wordmark teks, belum ada versi grafis asli.
+3. Isolasi infrastruktur: IP hosting beda dari tentakel lain (paling
    wajib), akun Cloudflare (sama dengan WCM 2 V.1 atau baru — masih
    perlu didiskusikan operator), GSC property baru.
-9. Domain, Git repo, hosting cPanel — cek status ke operator (folder ini
-   sudah punya `.git` dan `.cpanel.yml` warisan dari WCM 2, perlu
-   dipastikan ini emang buat WCM 3 atau masih sisa config lama yang
-   perlu direset).
-10. Setelah online, lapor ke Command Center biar status di
-    `skema-tentakel.html` diupdate dari "Sedang dibangun" jadi "Sudah
-    online".
+4. Detail struktur permalink custom yang mau dibuat beda dari
+   `/artikel/{slug}` punya wcm1_version1 (dan juga beda dari WCM 2) —
+   saat ini masih pakai pola yang sama, belum final.
+5. 3 artikel warisan WCM 2 tanpa kategori (`category_id` NULL) masih
+   perlu dibersihkan dari tabel `pages` di database production.
+6. Lapor ke Command Center biar status di `skema-tentakel.html`
+   diupdate dari "Sedang dibangun" jadi "Sudah online".
 
 ## Cara lanjut sesi ini
 
 Baca file ini dulu di awal sesi, lalu `docs/HANDOFF.md` buat detail
 checklist, dan `docs/ROADMAP.md` buat status per fase. Kalau ada
-keputusan besar yang belum jelas (kategori final, permalink, akun
-Cloudflare), TANYA operator dulu — jangan asumsi sendiri.
+keputusan besar yang belum jelas (permalink, akun Cloudflare), TANYA
+operator dulu — jangan asumsi sendiri.

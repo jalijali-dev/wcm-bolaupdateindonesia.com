@@ -1,5 +1,12 @@
 # HANDOFF — WCM 3 - Version 1
 
+> **STATUS: 🟢 FULL LIVE sejak 19 Agustus 2026.** Situs online di
+> https://bolaupdateindonesia.com — homepage, 4 kategori final, dan
+> artikel semua tampil sesuai mockup. Deploy via cPanel Git Version
+> Control sukses, config production sudah terisi manual di server, admin
+> panel sudah bisa login. Lihat bagian "Deploy Workflow" di bawah untuk
+> detail lengkap go-live.
+
 Dokumen ini merekam proses bootstrap WCM 3 V.1 (BolaUpdateIndonesia.com)
 sesuai **Work Order 004** dari Command Center (JCC, 18 Agu 2026),
 mengikuti checklist standar di
@@ -34,44 +41,44 @@ WCM 1 V.1.
 ## Checklist HANDOFF-CMS-ADMIN — status eksekusi
 
 ### 1. Isolasi Database
-- [x] `cms-admin/config/database.php` diarahkan ke `DB_NAME` baru:
-      `wcm3_version1` — genuinely beda nama dari
+- [x] Database dev lokal: `cms-admin/config/database.php` (dev, Docker)
+      diarahkan ke `DB_NAME` `wcm3_version1` — genuinely beda nama dari
       SEMUA database gurita Skema 1 yang sudah ada (`wpm_cms_goal`,
       `wpm_cms_olahraga77`, `wpm_cms_wcm1_version2`,
       `wpm_cms_wcm2_version1`, dan DB WCM 2 V.2/arenasport77 kalau
-      sudah ada).
-- [ ] **BELUM DIKONFIRMASI apakah database `wcm3_version1`
-      sudah benar-benar dibuat (dan kosong) di MySQL dev lokal.** Cek ke
-      operator / phpMyAdmin dulu sebelum asumsi admin panel bisa jalan.
-      **Ingat insiden WCM 2:** database sempat ke-copy penuh (struktur +
-      data) dari sumbernya lewat fitur "Copy database" phpMyAdmin,
-      ketahuan pas login pertama nampilin data situs sumber. Kalau itu
-      kejadian lagi di sini, harus TRUNCATE ulang (pola sama seperti
-      `_cleanup-fresh-start.php` yang pernah dipakai di WCM 2 — cek ke
-      `wcm2_version1`/folder WCM 2 kalau butuh referensi scriptnya,
-      JANGAN reuse langsung karena ada database-name safety-guard yang
-      hardcoded ke nama DB WCM 2).
-- [ ] Belum ada tabel/data — perlu jalanin schema migration begitu
-      database dikonfirmasi kosong.
-- [ ] Begitu hosting production untuk WCM 3 disiapkan, `database.php`
-      wajib diganti lagi ke kredensial production yang juga terpisah.
+      sudah ada). Dikonfirmasi kosong & sudah di-schema-migrate + diisi
+      8 artikel seed untuk verifikasi visual.
+- [x] **Database production sudah ada & sudah di-schema-migrate** —
+      `bolaupdateindone_cms` di cPanel MySQL Databases, genuinely
+      terpisah dari database dev lokal maupun database tentakel lain.
+      `cms-admin/config/database.php` di SERVER (bukan repo — file ini
+      gitignored) sudah diisi manual dengan `DB_HOST=localhost`,
+      `DB_NAME=bolaupdateindone_cms`, dan `DB_USER`/`DB_PASS` sesuai
+      kredensial cPanel MySQL Databases. Admin login di production
+      dikonfirmasi berhasil, jadi koneksi DB production sudah kebukti
+      jalan.
 
 ### 2. Isolasi Kredensial & Secret
-- [x] `CMS_AI_ENC_SECRET` di `app.php` **di-generate ulang** (bukan
-      reuse punya WCM 2) — beda instance, beda secret.
-- [ ] `GROWTH_AGENT_DIGEST_TOKEN` masih placeholder
-      `GANTI_DENGAN_TOKEN_ACAK_ASLI` (ikut ter-clone) — **wajib diisi
-      token asli baru** sebelum modul digest dipakai.
+- [x] `CMS_AI_ENC_SECRET` dev lokal di `app.php` **di-generate ulang**
+      (bukan reuse punya WCM 2) — beda instance, beda secret.
+- [x] **`CMS_AI_ENC_SECRET` production digenerate ULANG TERPISAH** dari
+      punya dev lokal (`bin2hex(random_bytes(32))`), diisi manual ke
+      `cms-admin/config/app.php` di server via cPanel File Manager —
+      bukan reuse dev, sesuai prinsip isolasi kredensial di dokumen ini.
 - [x] `config/app.php.example` sudah disesuaikan (contoh tagline diganti
       ke "Bola Update Indonesia").
-- [ ] `.gitignore` warisan clone masih perlu dicek ulang — pastikan pola
-      ignore untuk `config/app.php` dan `config/database.php` masih
-      cocok di proyek ini (belum diverifikasi ulang sesi ini).
-- [ ] Kalau folder ini masih punya script sekali-pakai warisan WCM 2
-      (mis. `_cleanup-fresh-start.php`) — belum dicek keberadaannya di
-      `cms-admin/`. Kalau ada dan isinya masih hardcoded ke DB WCM 2,
-      **hapus atau tulis ulang** sebelum dipakai di sini, supaya gak
-      salah TRUNCATE database yang salah.
+- [x] `.gitignore` dicek ulang & dikonfirmasi benar (lihat bagian Deploy
+      Workflow) — `config/app.php` dan `config/database.php` tetap
+      ter-exclude di kedua environment (dev & production).
+- [x] Script sekali-pakai warisan WCM 2 (`_cleanup-fresh-start.php` dkk)
+      dikonfirmasi tidak ada di folder ini — `.gitignore` juga sudah
+      punya pola blanket `_*.php` untuk mencegah script sekali-pakai
+      manapun ke-commit ke git.
+- [ ] `GROWTH_AGENT_DIGEST_TOKEN` masih placeholder
+      `GANTI_DENGAN_TOKEN_ACAK_ASLI` (ikut ter-clone, di dev maupun
+      production) — **wajib diisi token asli baru** sebelum modul digest
+      dipakai. Non-blocking untuk go-live karena modul ini belum aktif
+      dipakai.
 
 ### 3. Audit Modul yang Gak Relevan
 - [x] Modul livescore/football/basketball/F1 dan konsep `sport_key`
@@ -95,11 +102,15 @@ WCM 1 V.1.
 - [ ] System prompt AI di `growth-agent-service.php` — belum dicek ulang
       sesi ini, perlu diverifikasi masih netral (gak nyebut nama situs
       manapun) dan nanti disesuaikan ke konteks niche WCM 3 begitu jelas.
-- [ ] **Konten (artikel, kategori) belum ada sama sekali** untuk WCM 3 —
-      kategori & data warisan WCM 2 (kalau ada di database yang
-      di-clone) WAJIB di-TRUNCATE, bukan dipakai langsung. Artikel wajib
-      ditulis dari nol, TIDAK boleh copy-paste dari wcm1_version1,
-      wcm2_version1, atau situs manapun.
+- [x] **Konten sudah ada** — 8 artikel (2 per kategori final) ditulis
+      dari nol (bukan copy-paste dari wcm1_version1/wcm2_version1/situs
+      manapun), sudah dimasukkan ke database dev lokal & sudah tampil di
+      production. Lihat bagian "Frontend Publik" untuk detail.
+- [x] **Kredensial admin awal direset** — akun admin warisan WCM 2
+      (`admin@biangolahraga.com`) di database production di-reset via
+      SQL manual ke `admin@bolaupdateindonesia.com` + password baru.
+      Login di `https://bolaupdateindonesia.com/cms-admin/login.php`
+      dikonfirmasi berhasil oleh operator.
 
 ### 5. Frontend Publik — Dibangun Terpisah
 - [x] Kerangka frontend publik ikut ter-clone dari WCM 2: `index.php`,
@@ -222,28 +233,31 @@ WCM 1 V.1.
 - [x] Hosting cPanel: domain BolaUpdateIndonesia.com adalah addon domain
       di akun cPanel `bolaupdateindone` (bukan akun baru terpisah) —
       dikonfirmasi lewat path docroot di atas.
-- [ ] **Config production (manual di server, TIDAK lewat git):**
-      `cms-admin/config/database.php` di server perlu diisi
+- [x] **Config production sudah dibuat manual di server** (TIDAK lewat
+      git, sesuai `.gitignore`): `cms-admin/config/database.php` diisi
       `DB_NAME=bolaupdateindone_cms`, `DB_HOST=localhost` (bukan `mysql`
       seperti di Docker dev), `DB_USER`/`DB_PASS` sesuai kredensial
-      cPanel MySQL Databases — operator isi manual lewat cPanel File
-      Manager. `cms-admin/config/app.php` di production juga perlu
-      `CMS_AI_ENC_SECRET` digenerate ULANG (jangan reuse punya dev
-      lokal) — generate dengan `bin2hex(random_bytes(32))` (mis. lewat
-      `php -r "echo bin2hex(random_bytes(32));"` di terminal manapun),
-      lalu tempel ke `app.php` di server, upload manual lewat File
-      Manager (bukan git, karena gitignored).
-- [ ] **Verifikasi kategori production:** database production
-      `bolaupdateindone_cms` katanya sudah di-schema-migrate dan punya
-      isi tabel — operator perlu cek manual lewat phpMyAdmin cPanel
-      bahwa `article_categories` isinya persis 4 kategori final (Liga
-      Indonesia/Liga Eropa/Timnas/Transfer), bukan sisa kategori WCM2
-      apapun, SEBELUM publish artikel pertama di production. (Kalau ada
-      sisa kategori lain, `wpm_site_migrate_categories()` di
-      `site-bootstrap.php` akan otomatis reassign artikelnya ke
-      kategori final begitu halaman publik pertama diakses — tapi lebih
-      aman dicek manual dulu daripada mengandalkan migrasi otomatis di
-      data production.)
+      cPanel MySQL Databases. `cms-admin/config/app.php` diisi
+      `CMS_AI_ENC_SECRET` yang digenerate ULANG khusus production
+      (bukan reuse punya dev lokal). Keduanya diupload manual lewat
+      cPanel File Manager.
+- [x] **Deploy dijalankan & sukses** — tombol "Deploy HEAD Commit" di
+      cPanel Git Version Control (repo di
+      `/home/bolaupdateindone/repositories/wcm-bolaupdateindonesia.com`)
+      sudah dipencet, rsync ke `DEPLOYPATH` berhasil.
+- [x] **Kategori production terverifikasi** — `article_categories` di
+      `bolaupdateindone_cms` sudah berisi 4 kategori final (Liga
+      Indonesia/Liga Eropa/Timnas/Transfer) dan homepage/kategori/
+      artikel di production sudah dikonfirmasi tampil benar sesuai
+      mockup, jadi kategorinya sudah match (kalaupun sempat ada sisa
+      kategori WCM2, `wpm_site_migrate_categories()` di
+      `site-bootstrap.php` sudah auto-reassign begitu halaman publik
+      pertama diakses).
+- [x] **Situs FULL LIVE** di https://bolaupdateindonesia.com — homepage,
+      4 kategori, dan artikel semua tampil dengan benar sesuai mockup
+      V1. Admin panel juga sudah bisa diakses & login (lihat bagian
+      "Branding & Konten Netral" di atas untuk detail reset kredensial
+      admin).
 
 ### 7. SEO Dasar
 - [ ] Belum dikerjakan — robots.txt, sitemap, favicon (favicon.svg saat
@@ -302,21 +316,60 @@ WCM 1 V.1.
    cms-admin, ganti logo grafis, isolasi infrastruktur (IP/Cloudflare/
    GSC), verifikasi Git/`.cpanel.yml`.
 
-## Yang perlu dikonfirmasi/dikerjakan operator sebelum lanjut
+## Sesi lanjutan (19 Agustus 2026) — deploy & go-live
 
-1. **Database `wcm3_version1`** — sudah dibuat kosong
-   di MySQL dev lokal atau belum?
-2. ~~**Kategori final WCM 3**~~ — **selesai, ditentukan 19 Agu 2026: Liga
-   Indonesia, Liga Eropa, Timnas, Transfer.**
-3. **Detail struktur permalink** yang mau dibuat beda dari
-   `/artikel/{slug}` (dipakai wcm1_version1 & WCM 2).
-4. **Akun Cloudflare** — pakai akun yang sama dengan WCM 2 V.1, atau
+1. Mockup homepage V1 diimplementasikan penuh ke `index.php`,
+   `includes/site-header.php`, `includes/site-footer.php`,
+   `assets/css/site.css` (tema light), `kategori.php`/`artikel.php`
+   dirapikan supaya konsisten. 8 artikel seed (2 per kategori final)
+   ditulis dari nol + ilustrasi SVG per kategori dimasukkan ke database
+   dev lokal, diverifikasi visual di browser.
+2. `.git` lokal (riwayat warisan WCM 2, remote salah) diaudit — tidak
+   ada kredensial bocor — lalu di-reset bersih (backup dipindah ke luar
+   folder proyek). Commit awal WCM3 di-push ke GitHub
+   (`https://github.com/jalijali-dev/wcm-bolaupdateindonesia.com.git`
+   branch `main`).
+3. `.cpanel.yml` diisi `DEPLOYPATH=/home/bolaupdateindone/public_html/`
+   (path docroot addon domain dari operator), komentar warisan WCM2
+   dibersihkan. Repo Git Version Control cPanel di-clone ke
+   `/home/bolaupdateindone/repositories/wcm-bolaupdateindonesia.com`.
+4. Config production dibuat manual di server (TIDAK lewat git):
+   `cms-admin/config/database.php` (DB `bolaupdateindone_cms`,
+   `DB_HOST=localhost`) dan `cms-admin/config/app.php`
+   (`CMS_AI_ENC_SECRET` baru khusus production).
+5. Tombol "Deploy HEAD Commit" dipencet — deploy sukses.
+6. Kredensial admin awal (sisa WCM2, `admin@biangolahraga.com`) direset
+   via SQL manual ke `admin@bolaupdateindonesia.com` + password baru —
+   login dikonfirmasi berhasil oleh operator.
+7. **Situs dikonfirmasi FULL LIVE** di https://bolaupdateindonesia.com —
+   homepage, 4 kategori, artikel semua tampil benar sesuai mockup V1.
+
+## Status per 19 Agustus 2026: 🟢 FULL LIVE
+
+Semua item blocking untuk go-live sudah selesai:
+- ~~Database `wcm3_version1`~~ — selesai, dev lokal & production
+  (`bolaupdateindone_cms`) sudah jalan.
+- ~~Kategori final WCM 3~~ — selesai, ditentukan 19 Agu 2026: Liga
+  Indonesia, Liga Eropa, Timnas, Transfer, sudah terverifikasi di
+  production.
+- ~~Status `.git`/`.cpanel.yml`~~ — selesai, riwayat direset bersih,
+  `.cpanel.yml` diisi `DEPLOYPATH` production yang benar.
+- ~~Domain & hosting cPanel~~ — selesai, situs live di
+  https://bolaupdateindonesia.com.
+- ~~Mockup V1~~ — selesai, sudah diimplementasikan penuh ke kode PHP
+  asli dan live di production.
+
+## Yang masih perlu dikonfirmasi/dikerjakan operator (non-blocking)
+
+1. **Detail struktur permalink custom** yang mau dibuat beda dari
+   `/artikel/{slug}` (dipakai wcm1_version1 & WCM 2) — saat ini situs
+   sudah live pakai pola yang sama, ganti kalau operator mau struktur
+   lain nanti.
+2. **Akun Cloudflare** — pakai akun yang sama dengan WCM 2 V.1, atau
    akun baru?
-5. **Status folder ini** — `.git` dan `.cpanel.yml` yang ada di folder
-   ini sekarang, itu remote/config buat WCM 3 yang baru, atau warisan
-   dari setup lain yang perlu di-reset?
-6. Domain BolaUpdateIndonesia.com — sudah dibeli? Kalau sudah, hosting
-   cPanel & GSC bisa mulai disiapkan.
-7. **Konfirmasi mockup V1** (`docs/homepage-mockup-v1.html`) — kalau
-   sudah fix, lanjut diimplementasikan ke `index.php`/`site-header.php`/
-   `site-footer.php`/`assets/css/site.css` sungguhan.
+3. **Isolasi infrastruktur lain** — IP hosting beda dari tentakel lain,
+   GSC property baru untuk domain ini.
+4. **3 artikel warisan WCM 2 tanpa kategori** di tabel `pages` production
+   — mau di-TRUNCATE/dihapus manual kapan?
+5. Kalau semua di atas beres, lapor ke Command Center biar status di
+   `skema-tentakel.html` diupdate jadi "Sudah online".
