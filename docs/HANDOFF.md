@@ -187,14 +187,59 @@ WCM 1 V.1.
       Transfer dicek langsung), dan satu halaman artikel (Transfer).
 
 ### 6. Deploy Workflow
-- [ ] Folder ini punya `.git` dan `.cpanel.yml` warisan (kemungkinan
-      dari WCM 2 atau setup awal folder ini) — **belum diverifikasi**
-      apakah remote/config-nya emang buat WCM 3 atau masih nunjuk ke
-      proyek lain. Cek `git remote -v` dan isi `.cpanel.yml` sebelum
-      commit/deploy apapun dari folder ini.
-- [ ] `.gitignore` — perlu dicek ulang isinya masih relevan buat WCM 3.
-- [ ] Hosting cPanel, domain BolaUpdateIndonesia.com — status beli/setup
-      belum dikonfirmasi ke operator sesi ini.
+- [x] **Diverifikasi & dibereskan (sesi lanjutan, deploy prep):** `.git`
+      lokal folder ini ternyata riwayat warisan WCM 2 murni — 1 commit
+      ("Initial commit — biangolahraga.com go-live prep") dengan remote
+      salah menunjuk ke `wcm-biangolahraga.com.git`. Diaudit isi commit
+      itu: TIDAK ada kredensial asli ter-commit (config/database.php dan
+      config/app.php sejak awal cuma `.example` yang di-track). Karena
+      riwayatnya genuinely bukan riwayat WCM3 (pesan commit & remote
+      salah semua), diambil opsi fallback yang sudah disetujui operator:
+      `.git` lama DIPINDAH (bukan dihapus) ke
+      `../wcm3_version1-old-wcm2-gitbackup-<timestamp>/` di luar folder
+      proyek, lalu `git init` ulang dari nol dengan riwayat bersih milik
+      WCM3.
+- [x] `.gitignore` dicek ulang — masih benar: `cms-admin/config/
+      database.php`, `cms-admin/config/app.php`, `uploads/*` (kecuali
+      `uploads/media/index.php`), dan pola `_*.php` semua ter-exclude.
+      Dikonfirmasi juga tidak ada `_seed-articles.php` atau
+      `_cleanup-orphan-pages.php` tersisa di working tree.
+- [x] **Commit awal WCM3 sudah di-push** ke GitHub:
+      `https://github.com/jalijali-dev/wcm-bolaupdateindonesia.com.git`
+      branch `main` (119 file, source code + `.example` config saja,
+      tanpa kredensial asli).
+- [ ] `.cpanel.yml` masih placeholder `/home/USERNAME/public_html/` dan
+      komentarnya masih nyebut "akun cPanel biangolahraga.com" (warisan
+      WCM2). Operator sudah konfirmasi nama folder docroot addon domain:
+      `bolaupdateindonesia.com` (huruf kecil semua) — **masih nunggu
+      username akun cPanel / path lengkap** dari operator untuk
+      melengkapi `DEPLOYPATH` dan membersihkan komentar warisan WCM2.
+- [ ] Hosting cPanel: domain BolaUpdateIndonesia.com tampaknya jadi
+      addon domain di akun cPanel yang sudah ada (bukan akun baru) —
+      perlu path lengkap dari operator (lihat poin di atas) sebelum
+      deploy pertama lewat cPanel Git Version Control.
+- [ ] **Config production (manual di server, TIDAK lewat git):**
+      `cms-admin/config/database.php` di server perlu diisi
+      `DB_NAME=bolaupdateindone_cms`, `DB_HOST=localhost` (bukan `mysql`
+      seperti di Docker dev), `DB_USER`/`DB_PASS` sesuai kredensial
+      cPanel MySQL Databases — operator isi manual lewat cPanel File
+      Manager. `cms-admin/config/app.php` di production juga perlu
+      `CMS_AI_ENC_SECRET` digenerate ULANG (jangan reuse punya dev
+      lokal) — generate dengan `bin2hex(random_bytes(32))` (mis. lewat
+      `php -r "echo bin2hex(random_bytes(32));"` di terminal manapun),
+      lalu tempel ke `app.php` di server, upload manual lewat File
+      Manager (bukan git, karena gitignored).
+- [ ] **Verifikasi kategori production:** database production
+      `bolaupdateindone_cms` katanya sudah di-schema-migrate dan punya
+      isi tabel — operator perlu cek manual lewat phpMyAdmin cPanel
+      bahwa `article_categories` isinya persis 4 kategori final (Liga
+      Indonesia/Liga Eropa/Timnas/Transfer), bukan sisa kategori WCM2
+      apapun, SEBELUM publish artikel pertama di production. (Kalau ada
+      sisa kategori lain, `wpm_site_migrate_categories()` di
+      `site-bootstrap.php` akan otomatis reassign artikelnya ke
+      kategori final begitu halaman publik pertama diakses — tapi lebih
+      aman dicek manual dulu daripada mengandalkan migrasi otomatis di
+      data production.)
 
 ### 7. SEO Dasar
 - [ ] Belum dikerjakan — robots.txt, sitemap, favicon (favicon.svg saat

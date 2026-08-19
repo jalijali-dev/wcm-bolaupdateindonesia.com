@@ -84,11 +84,29 @@ Olahraga" (warisan WCM 2) ke "Bola Update Indonesia" dengan palet light.
 Belum: logo grafis final (masih wordmark teks), favicon publik grafis
 asli (masih placeholder warisan clone).
 
-## Fase 5 — Pra-Launch ⚪ Belum mulai
+## Fase 5 — Pra-Launch 🟠 Sebagian
 
-Belum relevan — nunggu Fase 1-4 selesai, domain dikonfirmasi, dan
-isolasi infrastruktur (IP hosting, akun Cloudflare, GSC) diputuskan
-operator dulu.
+Mulai deploy prep ke GitHub + cPanel Git Version Control. **Git repo WCM3
+sudah live**: riwayat `.git` lokal lama ternyata warisan WCM 2 murni (1
+commit "biangolahraga.com go-live prep", remote salah ke
+`wcm-biangolahraga.com.git`) — sudah diaudit (tidak ada kredensial bocor)
+lalu dibuang & di-reinit bersih (backup disimpan di luar folder proyek,
+bukan dihapus). Commit awal WCM3 (119 file, source only, tanpa
+kredensial) sudah di-push ke
+`https://github.com/jalijali-dev/wcm-bolaupdateindonesia.com.git` branch
+`main`. `.gitignore` dikonfirmasi masih benar (config kredensial +
+uploads + script `_*.php` ter-exclude).
+
+Belum: `.cpanel.yml` masih placeholder DEPLOYPATH (nunggu username/path
+lengkap cPanel dari operator — folder docroot addon domain sudah
+dikonfirmasi bernama `bolaupdateindonesia.com`), config production
+(`database.php`/`app.php` server — kredensial DB cPanel + `CMS_AI_ENC_SECRET`
+baru khusus production) masih perlu diisi manual oleh operator lewat
+cPanel File Manager, dan verifikasi isi `article_categories` di database
+production (`bolaupdateindone_cms`) masih perlu dicek manual oleh
+operator lewat phpMyAdmin sebelum publish artikel pertama di sana.
+Isolasi infrastruktur (IP hosting, akun Cloudflare, GSC) masih perlu
+diputuskan operator.
 
 ## Fase 6 — AI Automation Layer ⚪ Belum mulai
 
