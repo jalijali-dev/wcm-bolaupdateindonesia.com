@@ -226,7 +226,7 @@ function cms_current_theme(): string
 {
     cms_session_start();
     $theme = (string) ($_SESSION['wpm_theme'] ?? '');
-    return in_array($theme, cms_valid_themes(), true) ? $theme : 'deep-purple';
+    return in_array($theme, cms_valid_themes(), true) ? $theme : 'light-modern';
 }
 
 function cms_settings_href(): string

@@ -22,14 +22,29 @@ $cmsGrowthNotif = (isset($pdo) && $pdo instanceof PDO)
             <h1 class="admin-navbar__title"><?= cms_esc($pageTitle) ?></h1>
         </div>
         <div class="admin-navbar__center">
-            <label class="admin-search" data-pages-prefix="<?= cms_esc(cms_pages_prefix()) ?>">
-                <span class="visually-hidden">Search</span>
+            <?php
+            // Menu-only search: the list comes from $sidebarSections (already
+            // role-filtered in sidebar.php, which every page requires before
+            // navbar.php), so admins never see menus they can't open.
+            $adminSearchMenu = [];
+            foreach (($sidebarSections ?? []) as $searchSection) {
+                if ($searchSection['type'] === 'link') {
+                    $adminSearchMenu[] = ['label' => $searchSection['label'], 'group' => '', 'href' => $searchSection['href']];
+                    continue;
+                }
+                foreach ($searchSection['items'] as $searchItem) {
+                    $adminSearchMenu[] = ['label' => $searchItem['label'], 'group' => $searchSection['label'], 'href' => $searchItem['href']];
+                }
+            }
+            ?>
+            <label class="admin-search">
+                <span class="visually-hidden">Cari menu</span>
                 <input type="search"
                        id="admin-search-input"
                        class="admin-search__input"
-                       placeholder="Search pages, articles, messages…"
+                       placeholder="Cari menu…"
                        autocomplete="off"
-                       data-search-action="<?= cms_esc(cms_action_href('search.php')) ?>">
+                       data-menu="<?= cms_esc((string) json_encode($adminSearchMenu, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ?>">
                 <div class="admin-search__results" id="admin-search-results" hidden></div>
             </label>
         </div>
