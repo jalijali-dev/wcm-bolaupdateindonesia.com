@@ -77,7 +77,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $uploadedFileType = '';
 
     $errEditQuery = ($action === 'update' && (int) ($_POST['id'] ?? 0) > 0)
-        ? 'edit=' . (int) $_POST['id'] : null;
+        ? 'edit=' . (int) $_POST['id'] : ($action === 'create' ? 'new=1' : null);
 
     // Guard file content — matches every other uploads/* guard exactly.
     $guardContent = "<?php\ndeclare(strict_types=1);\n\nhttp_response_code(403);\nexit('Forbidden');\n";
@@ -221,14 +221,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         && !app_is_safe_local_media_path($filePath)
     ) {
         $errorQuery = ($action === 'update' && (int) ($_POST['id'] ?? 0) > 0)
-            ? 'edit=' . (int) $_POST['id'] : null;
+            ? 'edit=' . (int) $_POST['id'] : ($action === 'create' ? 'new=1' : null);
         $ml_redirect('Invalid file path. Local paths must start with /uploads/ and cannot contain "..".', 'error', $errorQuery);
     }
 
     $validationError = $ml_validate($fileName, $filePath, $fileType, $fileSizeRaw);
     if ($validationError !== null) {
         $errorQuery = ($action === 'update' && (int) ($_POST['id'] ?? 0) > 0)
-            ? 'edit=' . (int) $_POST['id'] : null;
+            ? 'edit=' . (int) $_POST['id'] : ($action === 'create' ? 'new=1' : null);
         $ml_redirect($validationError, 'error', $errorQuery);
     }
 
@@ -257,7 +257,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         );
         $insert->execute($payload);
         $newId = (int) $pdo->lastInsertId();
-        $ml_redirect('Media file created successfully.', 'success', 'edit=' . $newId);
+        $ml_redirect('Media file created successfully.', 'success');
     }
 
     if ($action === 'update') {
@@ -340,6 +340,9 @@ if ($editId > 0) {
     }
 }
 
+// Two separate views: the list (default) and the add/edit form (?new=1 or ?edit=ID).
+$isFormView = $editRow !== null || isset($_GET['new']);
+
 $formatDt = static function (?string $value): string {
     if ($value === null || $value === '') {
         return '—';
@@ -387,15 +390,19 @@ require dirname(__DIR__) . '/includes/alerts.php';
     <div class="toolbar">
         <div class="toolbar__left">
             <h2 class="section-title">Media library</h2>
-            <p class="section-lead">Central file store — enter file path as text (upload coming soon).</p>
+            <p class="section-lead">Central file store — upload a file or register a file path.</p>
         </div>
         <div class="toolbar__right">
-            <a class="admin-btn admin-btn--primary" id="ml-new-btn"
-               href="<?= cms_esc($selfUrl . '#media-form') ?>">Add Media Path</a>
+            <?php if ($isFormView) : ?>
+                <a class="admin-btn admin-btn--secondary" href="<?= cms_esc($selfUrl) ?>">Back to List</a>
+            <?php else : ?>
+                <a class="admin-btn admin-btn--primary" href="<?= cms_esc($selfUrl . '?new=1') ?>">Add Media Path</a>
+            <?php endif; ?>
         </div>
     </div>
 
-    <div class="admin-grid admin-grid--2">
+    <?php if (!$isFormView) : ?>
+    <div class="admin-stack">
         <div class="panel">
             <div class="panel__head">
                 <h3 class="panel__title">Media files</h3>
@@ -418,6 +425,7 @@ require dirname(__DIR__) . '/includes/alerts.php';
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                 </select>
+                <button type="button" id="ml-filter-btn" class="admin-btn admin-btn--secondary">Filter</button>
             </div>
 
             <div class="table-wrap ml-table-wrap">
@@ -513,6 +521,9 @@ require dirname(__DIR__) . '/includes/alerts.php';
             </div>
         </div>
 
+    </div>
+    <?php else : ?>
+    <div class="admin-stack">
         <div class="panel" id="media-form">
             <div class="panel__head">
                 <h3 class="panel__title"><?= $editRow ? 'Edit media file' : 'New media file' ?></h3>
@@ -535,7 +546,7 @@ require dirname(__DIR__) . '/includes/alerts.php';
                            id="ml-upload-file"
                            accept=".jpg,.jpeg,.png,.webp,.gif,.pdf">
                     <small class="ml-hint">
-                        Allowed: JPG, PNG, WebP, GIF, PDF · Max 5 MB.
+                        Allowed: JPG, PNG, WebP, GIF, PDF · Max 5 MB (images), 10 MB (PDF).
                         Uploading auto-fills the fields below.
                         <?php if ($editRow && $val($editRow, 'file_path') !== '') : ?>
                             Leave empty to keep the current file.
@@ -553,8 +564,7 @@ require dirname(__DIR__) . '/includes/alerts.php';
                            placeholder="/uploads/media/YYYY/MM/file.webp"
                            autocomplete="off">
                     <small class="ml-hint">
-                        Path from the project root, starting with a slash.
-                        Example: <code>/uploads/media/2026/05/photo.webp</code>
+                        Path starting with <code>/uploads/</code>, or a full <code>https://</code> URL.
                     </small>
                 </label>
                 <img class="cms-path-upload__preview"
@@ -615,6 +625,7 @@ require dirname(__DIR__) . '/includes/alerts.php';
             </form>
         </div>
     </div>
+    <?php endif; ?>
 </section>
 <script>
 (function () {
@@ -749,6 +760,9 @@ require dirname(__DIR__) . '/includes/alerts.php';
     searchEl.addEventListener('input',   applyFilters);
     typeEl.addEventListener('change',    applyFilters);
     statusEl.addEventListener('change',  applyFilters);
+    var filterBtn = document.getElementById('ml-filter-btn');
+    if (filterBtn) { filterBtn.addEventListener('click', applyFilters); }
+    searchEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); applyFilters(); } });
 })();
 
 // ---- Copy Path button ----
@@ -775,39 +789,6 @@ require dirname(__DIR__) . '/includes/alerts.php';
             try { document.execCommand('copy'); flash(); } catch (_) {}
             document.body.removeChild(ta);
         }
-    });
-})();
-
-// ---- "Add Media Path" button — always open a clean create form ----
-(function () {
-    var btn = document.getElementById('ml-new-btn');
-    if (!btn) return;
-
-    btn.addEventListener('click', function (e) {
-        var inEditMode = window.location.search.indexOf('edit=') !== -1;
-
-        if (inEditMode) {
-            // Navigate away from edit mode. The page will reload without ?edit=,
-            // PHP renders a blank create form, and the browser scrolls to #media-form.
-            // Let the default href handle it — no need to preventDefault.
-            return;
-        }
-
-        // Already in create mode: reset the form in-place, then scroll.
-        e.preventDefault();
-
-        var form = document.querySelector('#media-form form');
-        if (form) { form.reset(); }
-
-        // Clear path preview image
-        var prev = document.getElementById('ml-path-preview');
-        if (prev) { prev.hidden = true; prev.removeAttribute('src'); }
-
-        // Clear the file upload input (form.reset() covers it, but be explicit)
-        var upInput = document.getElementById('ml-upload-file');
-        if (upInput) { upInput.value = ''; }
-
-        document.getElementById('media-form').scrollIntoView({ behavior: 'smooth' });
     });
 })();
 </script>
